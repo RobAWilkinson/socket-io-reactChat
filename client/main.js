@@ -2,6 +2,8 @@ var React = require('react');
 var Chatbox = require('./js/ChatboxComponent');
 var Calendar = require('./js/CalendarComponent');
 var Input = require('./js/InputComponent');
+var io = require('socket.io-client');
+var socket = io();
 
 // renders both the CalendarComponent and ChatboxComponent next to each other
 var App = React.createClass({
@@ -9,10 +11,10 @@ var App = React.createClass({
     return({messages: []});
   },
   handleMessage: function(text) {
-    var newArray = this.state.messages;
-    newArray.push(text);
-    this.setState({messages: newArray});
-    console.log(this.state);
+    socket.emit('message', text);
+    socket.on('messages', function(messages) {
+      this.setState({messages: messages});
+    }.bind(this));
   },
   render: function() {
     return (
